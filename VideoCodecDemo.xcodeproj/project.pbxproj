@@ -8,14 +8,20 @@
 
 /* Begin PBXBuildFile section */
 		14B519B02499FEFF00F6E297 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 14B519AF2499FEFF00F6E297 /* AppDelegate.m */; };
-		14B519B32499FEFF00F6E297 /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 14B519B22499FEFF00F6E297 /* SceneDelegate.m */; };
-		14B519B62499FEFF00F6E297 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 14B519B52499FEFF00F6E297 /* ViewController.m */; };
 		14B519B92499FEFF00F6E297 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 14B519B72499FEFF00F6E297 /* Main.storyboard */; };
 		14B519BB2499FF0100F6E297 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 14B519BA2499FF0100F6E297 /* Assets.xcassets */; };
 		14B519BE2499FF0100F6E297 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 14B519BC2499FF0100F6E297 /* LaunchScreen.storyboard */; };
 		14B519C12499FF0100F6E297 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 14B519C02499FF0100F6E297 /* main.m */; };
 		14B519CB2499FF0200F6E297 /* VideoCodecDemoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 14B519CA2499FF0200F6E297 /* VideoCodecDemoTests.m */; };
 		14B519D62499FF0200F6E297 /* VideoCodecDemoUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 14B519D52499FF0200F6E297 /* VideoCodecDemoUITests.m */; };
+		14B519E5249A141F00F6E297 /* KKVideoCapture.m in Sources */ = {isa = PBXBuildFile; fileRef = 14B519E4249A141F00F6E297 /* KKVideoCapture.m */; };
+		14B519E8249A146E00F6E297 /* KKCaptureParams.m in Sources */ = {isa = PBXBuildFile; fileRef = 14B519E7249A146E00F6E297 /* KKCaptureParams.m */; };
+		14B519EB249AD29F00F6E297 /* KKVideoEncoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 14B519EA249AD29F00F6E297 /* KKVideoEncoder.m */; };
+		14B519EE249AD41F00F6E297 /* H264Decoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 14B519ED249AD41F00F6E297 /* H264Decoder.m */; };
+		14B519F0249AD46F00F6E297 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 14B519EF249AD46F00F6E297 /* Shaders.metal */; };
+		14B519F3249AD48500F6E297 /* MetalPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 14B519F2249AD48500F6E297 /* MetalPlayer.m */; };
+		14B519F6249AD49D00F6E297 /* VideoStreamPlayLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 14B519F5249AD49D00F6E297 /* VideoStreamPlayLayer.m */; };
+		14B519F8249AD58C00F6E297 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 14B519F7249AD58C00F6E297 /* ViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -39,10 +45,7 @@
 		14B519AB2499FEFF00F6E297 /* VideoCodecDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VideoCodecDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		14B519AE2499FEFF00F6E297 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		14B519AF2499FEFF00F6E297 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		14B519B12499FEFF00F6E297 /* SceneDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SceneDelegate.h; sourceTree = "<group>"; };
-		14B519B22499FEFF00F6E297 /* SceneDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SceneDelegate.m; sourceTree = "<group>"; };
 		14B519B42499FEFF00F6E297 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		14B519B52499FEFF00F6E297 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		14B519B82499FEFF00F6E297 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		14B519BA2499FF0100F6E297 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		14B519BD2499FF0100F6E297 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -54,6 +57,20 @@
 		14B519D12499FF0200F6E297 /* VideoCodecDemoUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VideoCodecDemoUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		14B519D52499FF0200F6E297 /* VideoCodecDemoUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VideoCodecDemoUITests.m; sourceTree = "<group>"; };
 		14B519D72499FF0200F6E297 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		14B519E3249A141F00F6E297 /* KKVideoCapture.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KKVideoCapture.h; sourceTree = "<group>"; };
+		14B519E4249A141F00F6E297 /* KKVideoCapture.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KKVideoCapture.m; sourceTree = "<group>"; };
+		14B519E6249A146E00F6E297 /* KKCaptureParams.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KKCaptureParams.h; sourceTree = "<group>"; };
+		14B519E7249A146E00F6E297 /* KKCaptureParams.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KKCaptureParams.m; sourceTree = "<group>"; };
+		14B519E9249AD29F00F6E297 /* KKVideoEncoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KKVideoEncoder.h; sourceTree = "<group>"; };
+		14B519EA249AD29F00F6E297 /* KKVideoEncoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KKVideoEncoder.m; sourceTree = "<group>"; };
+		14B519EC249AD41F00F6E297 /* H264Decoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = H264Decoder.h; sourceTree = "<group>"; };
+		14B519ED249AD41F00F6E297 /* H264Decoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = H264Decoder.m; sourceTree = "<group>"; };
+		14B519EF249AD46F00F6E297 /* Shaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
+		14B519F1249AD48500F6E297 /* MetalPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MetalPlayer.h; sourceTree = "<group>"; };
+		14B519F2249AD48500F6E297 /* MetalPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MetalPlayer.m; sourceTree = "<group>"; };
+		14B519F4249AD49D00F6E297 /* VideoStreamPlayLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoStreamPlayLayer.h; sourceTree = "<group>"; };
+		14B519F5249AD49D00F6E297 /* VideoStreamPlayLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VideoStreamPlayLayer.m; sourceTree = "<group>"; };
+		14B519F7249AD58C00F6E297 /* ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -106,15 +123,26 @@
 			children = (
 				14B519AE2499FEFF00F6E297 /* AppDelegate.h */,
 				14B519AF2499FEFF00F6E297 /* AppDelegate.m */,
-				14B519B12499FEFF00F6E297 /* SceneDelegate.h */,
-				14B519B22499FEFF00F6E297 /* SceneDelegate.m */,
 				14B519B42499FEFF00F6E297 /* ViewController.h */,
-				14B519B52499FEFF00F6E297 /* ViewController.m */,
+				14B519F7249AD58C00F6E297 /* ViewController.m */,
 				14B519B72499FEFF00F6E297 /* Main.storyboard */,
 				14B519BA2499FF0100F6E297 /* Assets.xcassets */,
 				14B519BC2499FF0100F6E297 /* LaunchScreen.storyboard */,
 				14B519BF2499FF0100F6E297 /* Info.plist */,
 				14B519C02499FF0100F6E297 /* main.m */,
+				14B519E3249A141F00F6E297 /* KKVideoCapture.h */,
+				14B519E4249A141F00F6E297 /* KKVideoCapture.m */,
+				14B519E6249A146E00F6E297 /* KKCaptureParams.h */,
+				14B519E7249A146E00F6E297 /* KKCaptureParams.m */,
+				14B519E9249AD29F00F6E297 /* KKVideoEncoder.h */,
+				14B519EA249AD29F00F6E297 /* KKVideoEncoder.m */,
+				14B519EC249AD41F00F6E297 /* H264Decoder.h */,
+				14B519ED249AD41F00F6E297 /* H264Decoder.m */,
+				14B519EF249AD46F00F6E297 /* Shaders.metal */,
+				14B519F1249AD48500F6E297 /* MetalPlayer.h */,
+				14B519F2249AD48500F6E297 /* MetalPlayer.m */,
+				14B519F4249AD49D00F6E297 /* VideoStreamPlayLayer.h */,
+				14B519F5249AD49D00F6E297 /* VideoStreamPlayLayer.m */,
 			);
 			path = VideoCodecDemo;
 			sourceTree = "<group>";
@@ -267,10 +295,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				14B519B62499FEFF00F6E297 /* ViewController.m in Sources */,
+				14B519F3249AD48500F6E297 /* MetalPlayer.m in Sources */,
+				14B519F6249AD49D00F6E297 /* VideoStreamPlayLayer.m in Sources */,
+				14B519F0249AD46F00F6E297 /* Shaders.metal in Sources */,
+				14B519E5249A141F00F6E297 /* KKVideoCapture.m in Sources */,
+				14B519F8249AD58C00F6E297 /* ViewController.m in Sources */,
+				14B519E8249A146E00F6E297 /* KKCaptureParams.m in Sources */,
 				14B519B02499FEFF00F6E297 /* AppDelegate.m in Sources */,
+				14B519EE249AD41F00F6E297 /* H264Decoder.m in Sources */,
+				14B519EB249AD29F00F6E297 /* KKVideoEncoder.m in Sources */,
 				14B519C12499FF0100F6E297 /* main.m in Sources */,
-				14B519B32499FEFF00F6E297 /* SceneDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -440,12 +474,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 6PL7SL392G;
 				INFOPLIST_FILE = VideoCodecDemo/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = hehe.li.VideoCodecDemo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lihedemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -456,12 +492,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 6PL7SL392G;
 				INFOPLIST_FILE = VideoCodecDemo/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = hehe.li.VideoCodecDemo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lihedemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
