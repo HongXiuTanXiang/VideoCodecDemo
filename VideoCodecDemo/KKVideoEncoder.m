@@ -250,9 +250,10 @@
     }
     
     CVImageBufferRef pixelBuffer = (CVImageBufferRef)CMSampleBufferGetImageBuffer(sampleBuffer);
+    
     NSDictionary *frameProperties = @{(__bridge NSString *)kVTEncodeFrameOptionKey_ForceKeyFrame: @(forceKeyFrame)};
     
-    OSStatus status = VTCompressionSessionEncodeFrame(_compressionSessionRef, pixelBuffer, kCMTimeInvalid, kCMTimeInvalid, (__bridge CFDictionaryRef)frameProperties, NULL, NULL);
+    OSStatus status = VTCompressionSessionEncodeFrame(_compressionSessionRef, pixelBuffer, kCMTimeInvalid, kCMTimeInvalid, (__bridge CFDictionaryRef)frameProperties, sampleBuffer, NULL);
     if (noErr != status)
     {
         NSLog(@"VideoEncoder::VTCompressionSessionEncodeFrame failed! status:%d", (int)status);
@@ -261,6 +262,13 @@
     return YES;
 }
 
+
+/// 编码后的回调函数
+/// @param outputCallbackRefCon 一般就是self  ,一般在传入函数指针的地方,也会将self传入
+/// @param sourceFrameRefCon 原始的编码钱的帧的引用,VTCompressionSessionEncodeFrame的sourceFrameRefCon
+/// @param status 回调状态
+/// @param infoFlags asynchronous, 指示是异步编码, frameDropped,如果帧被丢弃了就是这个值
+/// @param sampleBuffer 编码后的数据
 void encodeOutputDataCallback(void * CM_NULLABLE outputCallbackRefCon, void * CM_NULLABLE sourceFrameRefCon, OSStatus status, VTEncodeInfoFlags infoFlags, CM_NULLABLE CMSampleBufferRef sampleBuffer)
 {
     if (noErr != status || nil == sampleBuffer)
@@ -278,7 +286,7 @@ void encodeOutputDataCallback(void * CM_NULLABLE outputCallbackRefCon, void * CM
     {
         return;
     }
-    
+    // 帧被丢弃了,所以应该return
     if (infoFlags & kVTEncodeInfo_FrameDropped)
     {
         NSLog(@"VideoEncoder::H264 encode dropped frame.");
@@ -286,23 +294,28 @@ void encodeOutputDataCallback(void * CM_NULLABLE outputCallbackRefCon, void * CM
     }
     
     KKVideoEncoder *encoder = (__bridge KKVideoEncoder *)outputCallbackRefCon;
-    const char header[] = "\x00\x00\x00\x01";
+    const char header[] = "\x00\x00\x00\x01"; //h264 头,4字节
     size_t headerLen = (sizeof header) - 1;// c 字符串最后默认有\0
     NSData *headerData = [NSData dataWithBytes:header length:headerLen];
     
     // 判断是否是关键帧
-    bool isKeyFrame = !CFDictionaryContainsKey((CFDictionaryRef)CFArrayGetValueAtIndex(CMSampleBufferGetSampleAttachmentsArray(sampleBuffer, true), 0), (const void *)kCMSampleAttachmentKey_NotSync);
+    
+    // CMSampleBufferGetSampleAttachmentsArray, 返回一个CMSampleBuffer 样本附件的数组, CMSampleBuffer中每个样本附件一个字典
+    CFArrayRef arrRef = CMSampleBufferGetSampleAttachmentsArray(sampleBuffer, true);
+    CFDictionaryRef dicRef = (CFDictionaryRef)CFArrayGetValueAtIndex(arrRef, 0);
+    // kCMSampleAttachmentKey_NotSync, 非同步,异步 再取反,就是同步帧,也就是关键帧
+    bool isKeyFrame = !CFDictionaryContainsKey(dicRef, (const void *)kCMSampleAttachmentKey_NotSync);
     
     if (isKeyFrame)
     {
         NSLog(@"VideoEncoder::编码了一个关键帧");
         CMFormatDescriptionRef formatDescriptionRef = CMSampleBufferGetFormatDescription(sampleBuffer);
         
-        // 关键帧需要加上SPS、PPS信息
+        // 关键帧需要加上SPS
         size_t sParameterSetSize, sParameterSetCount;
         const uint8_t *sParameterSet;
         OSStatus spsStatus = CMVideoFormatDescriptionGetH264ParameterSetAtIndex(formatDescriptionRef, 0, &sParameterSet, &sParameterSetSize, &sParameterSetCount, 0);
-        
+        // 关键帧需要加上PPS信息
         size_t pParameterSetSize, pParameterSetCount;
         const uint8_t *pParameterSet;
         OSStatus ppsStatus = CMVideoFormatDescriptionGetH264ParameterSetAtIndex(formatDescriptionRef, 1, &pParameterSet, &pParameterSetSize, &pParameterSetCount, 0);
@@ -314,6 +327,7 @@ void encodeOutputDataCallback(void * CM_NULLABLE outputCallbackRefCon, void * CM
             NSMutableData *spsData = [NSMutableData data];
             [spsData appendData:headerData];
             [spsData appendData:sps];
+            // 先回调出去一个 spsData
             if ([encoder.delegate respondsToSelector:@selector(videoEncodeOutputDataCallback:isKeyFrame:)])
             {
                 [encoder.delegate videoEncodeOutputDataCallback:spsData isKeyFrame:isKeyFrame];
@@ -322,7 +336,7 @@ void encodeOutputDataCallback(void * CM_NULLABLE outputCallbackRefCon, void * CM
             NSMutableData *ppsData = [NSMutableData data];
             [ppsData appendData:headerData];
             [ppsData appendData:pps];
-            
+            // 再回调出一个ppsData
             if ([encoder.delegate respondsToSelector:@selector(videoEncodeOutputDataCallback:isKeyFrame:)])
             {
                 [encoder.delegate videoEncodeOutputDataCallback:ppsData isKeyFrame:isKeyFrame];
@@ -330,6 +344,7 @@ void encodeOutputDataCallback(void * CM_NULLABLE outputCallbackRefCon, void * CM
         }
     }
     
+    // 每次编码出来的是一个数据块
     CMBlockBufferRef blockBuffer = CMSampleBufferGetDataBuffer(sampleBuffer);
     size_t length, totalLength;
     char *dataPointer;
@@ -339,7 +354,8 @@ void encodeOutputDataCallback(void * CM_NULLABLE outputCallbackRefCon, void * CM
         NSLog(@"VideoEncoder::CMBlockBufferGetDataPointer Error : %d!", (int)status);
         return;
     }
-    
+    // 下面的操作是将这个块切成流
+    // 这是是AVCC格式的H264, NAL开始的固定4
     size_t bufferOffset = 0;
     static const int avcHeaderLength = 4;
     while (bufferOffset < totalLength - avcHeaderLength)
@@ -348,15 +364,16 @@ void encodeOutputDataCallback(void * CM_NULLABLE outputCallbackRefCon, void * CM
         uint32_t nalUnitLength = 0;
         memcpy(&nalUnitLength, dataPointer + bufferOffset, avcHeaderLength);
         
-        // 大端转小端
+        // 大端转小端, 大小为大,数据的大字节,保存在内存的低地址中, iOS中的内存模式是小端模式,低地址保存数据的低字节,高地址保存数据的高字节
+        // NAL的长度就存储在了 nalUnitLength中
         nalUnitLength = CFSwapInt32BigToHost(nalUnitLength);
-        
+        // 帧数据
         NSData *frameData = [[NSData alloc] initWithBytes:(dataPointer + bufferOffset + avcHeaderLength) length:nalUnitLength];
         
         NSMutableData *outputFrameData = [NSMutableData data];
         [outputFrameData appendData:headerData];
         [outputFrameData appendData:frameData];
-        
+        // 下个数据指针的起始地址  += 4 + NAL的长度
         bufferOffset += avcHeaderLength + nalUnitLength;
         
         if ([encoder.delegate respondsToSelector:@selector(videoEncodeOutputDataCallback:isKeyFrame:)])
