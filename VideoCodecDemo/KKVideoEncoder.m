@@ -354,25 +354,24 @@ void encodeOutputDataCallback(void * CM_NULLABLE outputCallbackRefCon, void * CM
         NSLog(@"VideoEncoder::CMBlockBufferGetDataPointer Error : %d!", (int)status);
         return;
     }
-    // 下面的操作是将这个块切成流
-    // 这是是AVCC格式的H264, NAL开始的固定4
+    // 下面的操作是将这个块切成流 也就是将 RTP包格式切成了字节流格式
     size_t bufferOffset = 0;
     static const int avcHeaderLength = 4;
     while (bufferOffset < totalLength - avcHeaderLength)
     {
-        // 读取 NAL 单元长度
+        // 读取 NAL 单元长度, 前4个字节放的是NAL的长度
         uint32_t nalUnitLength = 0;
         memcpy(&nalUnitLength, dataPointer + bufferOffset, avcHeaderLength);
         
         // 大端转小端, 大小为大,数据的大字节,保存在内存的低地址中, iOS中的内存模式是小端模式,低地址保存数据的低字节,高地址保存数据的高字节
         // NAL的长度就存储在了 nalUnitLength中
         nalUnitLength = CFSwapInt32BigToHost(nalUnitLength);
-        // 帧数据
+        // 一块连续的帧数据
         NSData *frameData = [[NSData alloc] initWithBytes:(dataPointer + bufferOffset + avcHeaderLength) length:nalUnitLength];
-        
+        // 这里相当于在原来的数据前拼接了 0x00 00 00 01
         NSMutableData *outputFrameData = [NSMutableData data];
-        [outputFrameData appendData:headerData];
-        [outputFrameData appendData:frameData];
+        [outputFrameData appendData:headerData];// 0x00 00 00 01
+        [outputFrameData appendData:frameData]; // 一块连续的帧数据
         // 下个数据指针的起始地址  += 4 + NAL的长度
         bufferOffset += avcHeaderLength + nalUnitLength;
         

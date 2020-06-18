@@ -52,7 +52,7 @@ static void decodeOutputDataCallback(void *decompressionOutputRefCon, void *sour
     {
         return YES;
     }
-    
+    // 序列参数集,图像参数集
     const uint8_t* const parameterSetPointers[2] = {_sps, _pps};
     const size_t parameterSetSizes[2] = {_spsSize, _ppsSize};
     // 根据sps pps创建解码视频参数
@@ -68,8 +68,13 @@ static void decodeOutputDataCallback(void *decompressionOutputRefCon, void *sour
     // kCVPixelBufferPixelFormatTypeKey 解码图像的采样格式
     // kCVPixelBufferWidthKey、kCVPixelBufferHeightKey 解码图像的宽高
     // kCVPixelBufferOpenGLCompatibilityKey制定支持OpenGL渲染，经测试有没有这个参数好像没什么差别
-    NSDictionary* destinationPixelBufferAttributes = @{(id)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange), (id)kCVPixelBufferWidthKey : @(dimensions.width), (id)kCVPixelBufferHeightKey : @(dimensions.height),
-                                                       (id)kCVPixelBufferOpenGLCompatibilityKey : @(YES)};
+    NSDictionary* destinationPixelBufferAttributes =
+    @{
+        (id)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange),
+        (id)kCVPixelBufferWidthKey : @(dimensions.width),
+        (id)kCVPixelBufferHeightKey : @(dimensions.height),
+        (id)kCVPixelBufferOpenGLCompatibilityKey : @(YES)
+    };
     
     // 设置解码输出数据回调
     VTDecompressionOutputCallbackRecord callBackRecord;
@@ -142,10 +147,12 @@ static void decodeOutputDataCallback(void *decompressionOutputRefCon, void *sour
 {
     uint8_t *frame = (uint8_t *)naluData.bytes;
     uint32_t frameSize = (uint32_t)naluData.length;
-    // frame的前4位是NALU数据的开始码，也就是00 00 00 01，第5个字节是表示数据类型，转为10进制后，7是sps,8是pps,5是IDR（I帧）信息
+    // frame的前4个字节是NALU数据的开始码，也就是00 00 00 01，
+    // 第5个字节是表示数据类型，转为10进制后，7是sps,8是pps,5是IDR（I帧）信息
     int nalu_type = (frame[4] & 0x1F);
     
-    // 将NALU的开始码替换成NALU的长度信息
+    // 将NALU的开始码替换成NALU的长度信息, 因为我们在编码的时候曾把长度信息给替换成了开始码00 00 00 01，
+    // 所以我们现在做一个逆向的过程,这样把数据给 VideoToolBox 才能解码
     uint32_t nalSize = (uint32_t)(frameSize - 4);
     uint8_t *pNalSize = (uint8_t*)(&nalSize);
     frame[0] = *(pNalSize + 3);
