@@ -153,12 +153,16 @@ static void decodeOutputDataCallback(void *decompressionOutputRefCon, void *sour
     
     // 将NALU的开始码替换成NALU的长度信息, 因为我们在编码的时候曾把长度信息给替换成了开始码00 00 00 01，
     // 所以我们现在做一个逆向的过程,这样把数据给 VideoToolBox 才能解码
+    // 将视频数据起始码转换为AVCC大端模式,保证NAL开始的4个字节是大端模式下NAL的长度
     uint32_t nalSize = (uint32_t)(frameSize - 4);
-    uint8_t *pNalSize = (uint8_t*)(&nalSize);
-    frame[0] = *(pNalSize + 3);
-    frame[1] = *(pNalSize + 2);
-    frame[2] = *(pNalSize + 1);
-    frame[3] = *(pNalSize);
+    uint32_t bigNalSize = CFSwapInt32HostToBig(nalSize);
+    memcpy(frame, &bigNalSize, 4);
+    // 下面的做法也是保证NAL开始的4个字节是大端模式下NAL的长度
+//    uint8_t *pNalSize = (uint8_t*)(&nalSize);
+//    frame[0] = *(pNalSize + 3);
+//    frame[1] = *(pNalSize + 2);
+//    frame[2] = *(pNalSize + 1);
+//    frame[3] = *(pNalSize);
     
     switch (nalu_type)
     {

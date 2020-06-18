@@ -354,7 +354,7 @@ void encodeOutputDataCallback(void * CM_NULLABLE outputCallbackRefCon, void * CM
         NSLog(@"VideoEncoder::CMBlockBufferGetDataPointer Error : %d!", (int)status);
         return;
     }
-    // 下面的操作是将这个块切成流 也就是将 RTP包格式切成了字节流格式
+    // 下面的作用就时间就是将一个个NALU前面加上 0x00000001,便于后面解码
     size_t bufferOffset = 0;
     static const int avcHeaderLength = 4;
     while (bufferOffset < totalLength - avcHeaderLength)
