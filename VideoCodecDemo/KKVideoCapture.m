@@ -52,7 +52,7 @@
             errorMessage = [self p_errorWithDomain:@"MAVideoCapture::Get Camera Faild!"];
             return nil;
         }
-        // 转化为输入设备
+        // 根据摄像头创建输入设备
         AVCaptureDevice *camera = captureDeviceArray.firstObject;
         self.captureDeviceInput = [AVCaptureDeviceInput deviceInputWithDevice:camera error:&errorMessage];
         if (errorMessage)
@@ -61,9 +61,6 @@
             return nil;
         }
         
-        
-        /****************** 设置输出设备 ************************/
-        
         // 设置视频输出
         self.captureVideoDataOutput = [[AVCaptureVideoDataOutput alloc] init];
         
@@ -71,6 +68,7 @@
         [self.captureVideoDataOutput setVideoSettings:videoSetting];
         // 设置输出串行队列和数据回调
         dispatch_queue_t outputQueue = dispatch_queue_create("VCVideoCapturerOutputQueue", DISPATCH_QUEUE_SERIAL);
+        // 设置输出的回调代理,在代理方法中获取视频流
         [self.captureVideoDataOutput setSampleBufferDelegate:self queue:outputQueue];
         // 丢弃延迟的帧
         self.captureVideoDataOutput.alwaysDiscardsLateVideoFrames = YES;
@@ -79,7 +77,7 @@
         self.captureStillImageOutput = [[AVCaptureStillImageOutput alloc] init];
         [self.captureStillImageOutput setOutputSettings:@{AVVideoCodecKey:AVVideoCodecJPEG}];
         
-        /****************** 初始化会话 ************************/
+        //初始化会话
         self.captureSession = [[AVCaptureSession alloc] init];
         self.captureSession.usesApplicationAudioSession = NO;
         // 添加输入设备到会话
@@ -229,7 +227,9 @@
     AVCaptureDeviceInput *newInput = [AVCaptureDeviceInput deviceInputWithDevice:camera error:&error];
     // 修改输入设备
     [self.captureSession beginConfiguration];
+    // 删除之前的输入
     [self.captureSession removeInput:self.captureDeviceInput];
+    // 重新添加输入
     if ([_captureSession canAddInput:newInput])
     {
         [_captureSession addInput:newInput];

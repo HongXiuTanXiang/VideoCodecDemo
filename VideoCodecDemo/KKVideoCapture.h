@@ -11,7 +11,7 @@
 
 @protocol KKVideoCaptureSampleDelegate <NSObject>
 
-- (void)videoCaptureOutputDataCallback:(CMSampleBufferRef)sampleBuffer;
+- (void)videoCaptureOutputDataCallback:(CMSampleBufferRef _Nullable )sampleBuffer;
 
 @end
 

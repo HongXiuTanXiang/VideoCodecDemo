@@ -117,6 +117,8 @@
         }
 
         // 配置I帧间隔
+        
+        // 配置关键帧 I 帧 数据流间隔
         status = VTSessionSetProperty(_compressionSessionRef,
                                       kVTCompressionPropertyKey_MaxKeyFrameInterval, (__bridge CFTypeRef)@(self.videoEncodeParam.frameRate * self.videoEncodeParam.maxKeyFrameInterval));
         if (noErr != status)
@@ -124,6 +126,7 @@
             NSLog(@"VideoEncoder::kVTCompressionPropertyKey_MaxKeyFrameInterval failed status:%d", (int)status);
             return nil;
         }
+        // 配置关键帧 I帧 时间间隔
         status = VTSessionSetProperty(_compressionSessionRef,
                                       kVTCompressionPropertyKey_MaxKeyFrameIntervalDuration,
                                       (__bridge CFTypeRef)@(self.videoEncodeParam.maxKeyFrameInterval));
@@ -284,7 +287,7 @@ void encodeOutputDataCallback(void * CM_NULLABLE outputCallbackRefCon, void * CM
     
     KKVideoEncoder *encoder = (__bridge KKVideoEncoder *)outputCallbackRefCon;
     const char header[] = "\x00\x00\x00\x01";
-    size_t headerLen = (sizeof header) - 1;
+    size_t headerLen = (sizeof header) - 1;// c 字符串最后默认有\0
     NSData *headerData = [NSData dataWithBytes:header length:headerLen];
     
     // 判断是否是关键帧
